@@ -15,8 +15,23 @@ group <- read_csv("data/group.csv")  # for Model 3 & 5
 group2 <- read_csv("data/group2.csv")  # for Model 4 & 6 
 
 
-# Fit Models ------------------------------------------------
+# Prior prediction --------------------------------------------------------
+N = 100
+prior_pred <- tibble(Intercept = rnorm(N, 0, 50),
+                     b_hits = rnorm(N, 0, 20),
+                     b_Month = rnorm(N, 0, 20),
+                     Area = rcauchy(N, 0, 1),
+                     Transect = rcauchy(N, 0, 1),
+                     iter = 1:N) %>% 
+  expand_grid(hits = m2c_mt$data$hits) %>% 
+  mutate(hits_fit = Intercept + b_hits*hits)
 
+prior_pred %>% 
+  ggplot(aes(x = hits, y = hits_fit, group = iter)) +
+  geom_line()
+
+
+# Fit Models ------------------------------------------------
 
 # load fitted models or re-fit them below by removing "#'s"
 m2c_mt <- readRDS("models/m2c_mt.rds") # model 1
