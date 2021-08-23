@@ -196,6 +196,22 @@ write.csv(all_partial_r2, file = "summaries/all_partial_r2.csv", row.names = F)
 
 # Plots --------------------------------------------------------
 # plot data
+frequencies <- species %>% 
+  group_by(species) %>% 
+  summarize(species_total_hits = sum(Hits),
+            species_total_biomass = sum(Biomass)) %>% 
+  ungroup() %>% 
+  mutate(total_hits = sum(species_total_hits),
+         total_biomass = sum(species_total_biomass),
+         proportion_hits = species_total_hits/total_hits,
+         proportion_biomass = species_total_biomass/total_biomass) %>% 
+  arrange(-proportion_biomass) %>% 
+  select(-total_hits, -total_biomass) %>% 
+  mutate(proportion_hits = round(proportion_hits, 2),
+         proportion_biomass = round(proportion_biomass, 2)) 
+
+write.csv(frequencies, file = "summaries/frequencies.csv", row.names = F)
+
 raw_data <- bind_rows(nosp_nogp, 
                       species,
                       group,
